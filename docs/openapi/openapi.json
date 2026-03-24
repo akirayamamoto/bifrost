@@ -132816,9 +132816,14 @@
                           "type": "integer",
                           "description": "Maximum request body size in MB"
                         },
-                        "enable_litellm_fallbacks": {
-                          "type": "boolean",
-                          "description": "Whether LiteLLM fallbacks are enabled"
+                        "compat": {
+                          "type": "object",
+                          "description": "Compat plugin configuration",
+                          "properties": {
+                            "convert_text_to_chat": { "type": "boolean", "description": "Convert text completion requests to chat" },
+                            "convert_chat_to_responses": { "type": "boolean", "description": "Convert chat completion requests to responses" },
+                            "should_drop_params": { "type": "boolean", "description": "Drop unsupported parameters based on model catalog" }
+                          }
                         },
                         "log_retention_days": {
                           "type": "integer",
@@ -133126,9 +133131,14 @@
                         "type": "integer",
                         "description": "Maximum request body size in MB"
                       },
-                      "enable_litellm_fallbacks": {
-                        "type": "boolean",
-                        "description": "Whether LiteLLM fallbacks are enabled"
+                      "compat": {
+                        "type": "object",
+                        "description": "Compat plugin configuration",
+                        "properties": {
+                          "convert_text_to_chat": { "type": "boolean", "description": "Convert text completion requests to chat" },
+                          "convert_chat_to_responses": { "type": "boolean", "description": "Convert chat completion requests to responses" },
+                          "should_drop_params": { "type": "boolean", "description": "Drop unsupported parameters based on model catalog" }
+                        }
                       },
                       "log_retention_days": {
                         "type": "integer",
@@ -201027,9 +201037,14 @@
                 "type": "integer",
                 "description": "Maximum request body size in MB"
               },
-              "enable_litellm_fallbacks": {
-                "type": "boolean",
-                "description": "Whether LiteLLM fallbacks are enabled"
+              "compat": {
+                "type": "object",
+                "description": "Compat plugin configuration",
+                "properties": {
+                  "convert_text_to_chat": { "type": "boolean", "description": "Convert text completion requests to chat" },
+                  "convert_chat_to_responses": { "type": "boolean", "description": "Convert chat completion requests to responses" },
+                  "should_drop_params": { "type": "boolean", "description": "Drop unsupported parameters based on model catalog" }
+                }
               },
               "log_retention_days": {
                 "type": "integer",
@@ -201237,9 +201252,14 @@
                 "type": "integer",
                 "description": "Maximum request body size in MB"
               },
-              "enable_litellm_fallbacks": {
-                "type": "boolean",
-                "description": "Whether LiteLLM fallbacks are enabled"
+              "compat": {
+                "type": "object",
+                "description": "Compat plugin configuration",
+                "properties": {
+                  "convert_text_to_chat": { "type": "boolean", "description": "Convert text completion requests to chat" },
+                  "convert_chat_to_responses": { "type": "boolean", "description": "Convert chat completion requests to responses" },
+                  "should_drop_params": { "type": "boolean", "description": "Drop unsupported parameters based on model catalog" }
+                }
               },
               "log_retention_days": {
                 "type": "integer",
