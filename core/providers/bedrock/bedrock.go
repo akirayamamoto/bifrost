@@ -221,7 +221,7 @@ func (provider *BedrockProvider) completeRequest(ctx *schemas.BifrostContext, js
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", key.Value.GetValue()))
 	} else {
 		// Sign the request using either explicit credentials or IAM role authentication
-		if err := signAWSRequest(ctx, req, config.AccessKey, config.SecretKey, config.SessionToken, config.RoleARN, config.ExternalID, config.RoleSessionName, region, bedrockSigningService, provider.GetProviderKey()); err != nil {
+		if err := signAWSRequest(ctx, req, config.AccessKey, config.SecretKey, config.SessionToken, config.RoleARN, config.ExternalID, config.RoleSessionName, region, bedrockSigningService); err != nil {
 			return nil, 0, nil, err
 		}
 	}
@@ -348,7 +348,7 @@ func (provider *BedrockProvider) completeAgentRuntimeRequest(ctx *schemas.Bifros
 	if key.Value.GetValue() != "" {
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", key.Value.GetValue()))
 	} else {
-		if err := signAWSRequest(ctx, req, config.AccessKey, config.SecretKey, config.SessionToken, config.RoleARN, config.ExternalID, config.RoleSessionName, region, bedrockSigningService, provider.GetProviderKey()); err != nil {
+		if err := signAWSRequest(ctx, req, config.AccessKey, config.SecretKey, config.SessionToken, config.RoleARN, config.ExternalID, config.RoleSessionName, region, bedrockSigningService); err != nil {
 			return nil, 0, nil, err
 		}
 	}
@@ -450,8 +450,8 @@ func (provider *BedrockProvider) makeStreamingRequest(ctx *schemas.BifrostContex
 	} else {
 		req.Header.Set("Accept", "application/vnd.amazon.eventstream")
 		// Sign the request using either explicit credentials or IAM role authentication
-		if err := signAWSRequest(ctx, req, key.BedrockKeyConfig.AccessKey, key.BedrockKeyConfig.SecretKey, key.BedrockKeyConfig.SessionToken, key.BedrockKeyConfig.RoleARN, key.BedrockKeyConfig.ExternalID, key.BedrockKeyConfig.RoleSessionName, region, bedrockSigningService, providerName); err != nil {
-			return nil, deployment, err
+		if err := signAWSRequest(ctx, req, key.BedrockKeyConfig.AccessKey, key.BedrockKeyConfig.SecretKey, key.BedrockKeyConfig.SessionToken, key.BedrockKeyConfig.RoleARN, key.BedrockKeyConfig.ExternalID, key.BedrockKeyConfig.RoleSessionName, region, bedrockSigningService); err != nil {
+			return nil, err
 		}
 	}
 
@@ -480,25 +480,25 @@ func (provider *BedrockProvider) makeStreamingRequest(ctx *schemas.BifrostContex
 		var opErr *net.OpError
 		var dnsErr *net.DNSError
 		if errors.As(respErr, &opErr) || errors.As(respErr, &dnsErr) {
-			return nil, deployment, &schemas.BifrostError{
+			return nil, &schemas.BifrostError{
 				IsBifrostError: false,
 				Error: &schemas.ErrorField{
 					Message: schemas.ErrProviderNetworkError,
 					Error:   respErr,
 				},
 				ExtraFields: schemas.BifrostErrorExtraFields{
-					Provider: providerName,
+					Provider: provider.GetProviderKey(),
 				},
 			}
 		}
-		return nil, deployment, &schemas.BifrostError{
+		return nil, &schemas.BifrostError{
 			IsBifrostError: false,
 			Error: &schemas.ErrorField{
 				Message: schemas.ErrProviderDoRequest,
 				Error:   respErr,
 			},
 			ExtraFields: schemas.BifrostErrorExtraFields{
-				Provider: providerName,
+				Provider: provider.GetProviderKey(),
 			},
 		}
 	}
@@ -706,7 +706,7 @@ func (provider *BedrockProvider) listModelsByKey(ctx *schemas.BifrostContext, ke
 	} else {
 		// Sign the request using either explicit credentials or IAM role authentication
 
-		if err := signAWSRequest(ctx, req, config.AccessKey, config.SecretKey, config.SessionToken, config.RoleARN, config.ExternalID, config.RoleSessionName, region, bedrockSigningService, providerName); err != nil {
+		if err := signAWSRequest(ctx, req, config.AccessKey, config.SecretKey, config.SessionToken, config.RoleARN, config.ExternalID, config.RoleSessionName, region, bedrockSigningService); err != nil {
 			return nil, err
 		}
 	}
@@ -969,13 +969,12 @@ func (provider *BedrockProvider) TextCompletionStream(ctx *schemas.BifrostContex
 							Error:   err,
 						},
 						ExtraFields: schemas.BifrostErrorExtraFields{
-							RequestType:    schemas.TextCompletionStreamRequest,
-							Provider:       providerName,
-							ModelRequested: request.Model,
+							RequestType: schemas.TextCompletionStreamRequest,
+							Provider:    providerName,
 						},
 					}, responseChan, provider.logger)
 				} else {
-					providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, schemas.TextCompletionStreamRequest, providerName, request.Model, provider.logger)
+					providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, provider.logger)
 				}
 				return
 			}
@@ -1007,14 +1006,13 @@ func (provider *BedrockProvider) TextCompletionStream(ctx *schemas.BifrostContex
 									Message: fmt.Sprintf("%s stream %s: %s", providerName, excType, errMsg),
 								},
 								ExtraFields: schemas.BifrostErrorExtraFields{
-									RequestType:    schemas.TextCompletionStreamRequest,
-									Provider:       providerName,
-									ModelRequested: request.Model,
+									RequestType: schemas.TextCompletionStreamRequest,
+									Provider:    providerName,
 								},
 							}, responseChan, provider.logger)
 						} else {
 							err := fmt.Errorf("%s stream %s: %s", providerName, excType, errMsg)
-							providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, schemas.TextCompletionStreamRequest, providerName, request.Model, provider.logger)
+							providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, provider.logger)
 						}
 						return
 					}
@@ -1130,7 +1128,6 @@ func (provider *BedrockProvider) ChatCompletionStream(ctx *schemas.BifrostContex
 	if err := providerUtils.CheckOperationAllowed(schemas.Bedrock, provider.customProviderConfig, schemas.ChatCompletionStreamRequest); err != nil {
 		return nil, err
 	}
-
 	jsonData, bifrostErr := providerUtils.CheckContextAndGetRequestBody(
 		ctx,
 		request,
@@ -1152,7 +1149,7 @@ func (provider *BedrockProvider) ChatCompletionStream(ctx *schemas.BifrostContex
 	responseChan := make(chan *schemas.BifrostStreamChunk, schemas.DefaultStreamBufferSize)
 
 	providerUtils.SetStreamIdleTimeoutIfEmpty(ctx, provider.networkConfig.StreamIdleTimeoutInSeconds)
-
+	providerName := provider.GetProviderKey()
 	// Start streaming in a goroutine
 	go func() {
 		defer func() {
@@ -1226,13 +1223,12 @@ func (provider *BedrockProvider) ChatCompletionStream(ctx *schemas.BifrostContex
 							Error:   err,
 						},
 						ExtraFields: schemas.BifrostErrorExtraFields{
-							RequestType:    schemas.ChatCompletionStreamRequest,
-							Provider:       providerName,
-							ModelRequested: request.Model,
+							RequestType: schemas.ChatCompletionStreamRequest,
+							Provider:    providerName,
 						},
 					}, responseChan, provider.logger)
 				} else {
-					providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, schemas.ChatCompletionStreamRequest, providerName, request.Model, provider.logger)
+					providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, provider.logger)
 				}
 				return
 			}
@@ -1261,13 +1257,12 @@ func (provider *BedrockProvider) ChatCompletionStream(ctx *schemas.BifrostContex
 									Message: err.Error(),
 								},
 								ExtraFields: schemas.BifrostErrorExtraFields{
-									RequestType:    schemas.ChatCompletionStreamRequest,
-									Provider:       providerName,
-									ModelRequested: request.Model,
+									RequestType: schemas.ChatCompletionStreamRequest,
+									Provider:    providerName,
 								},
 							}, responseChan, provider.logger)
 						} else {
-							providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, schemas.ChatCompletionStreamRequest, providerName, request.Model, provider.logger)
+							providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, provider.logger)
 						}
 						return
 					}
@@ -1556,7 +1551,7 @@ func (provider *BedrockProvider) ResponsesStream(ctx *schemas.BifrostContext, po
 		lastChunkTime := startTime
 		decoder := eventstream.NewDecoder()
 		payloadBuf := make([]byte, 0, 1024*1024) // 1MB payload buffer
-
+		providerName := provider.GetProviderKey()
 		for {
 			// If context was cancelled/timed out, let defer handle it
 			if ctx.Err() != nil {
@@ -1609,13 +1604,12 @@ func (provider *BedrockProvider) ResponsesStream(ctx *schemas.BifrostContext, po
 							Error:   err,
 						},
 						ExtraFields: schemas.BifrostErrorExtraFields{
-							RequestType:    schemas.ResponsesStreamRequest,
-							Provider:       providerName,
-							ModelRequested: request.Model,
+							RequestType: schemas.ResponsesStreamRequest,
+							Provider:    providerName,
 						},
 					}, responseChan, provider.logger)
 				} else {
-					providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, schemas.ResponsesStreamRequest, providerName, request.Model, provider.logger)
+					providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, provider.logger)
 				}
 				return
 			}
@@ -1644,13 +1638,12 @@ func (provider *BedrockProvider) ResponsesStream(ctx *schemas.BifrostContext, po
 									Message: err.Error(),
 								},
 								ExtraFields: schemas.BifrostErrorExtraFields{
-									RequestType:    schemas.ResponsesStreamRequest,
-									Provider:       providerName,
-									ModelRequested: request.Model,
+									RequestType: schemas.ResponsesStreamRequest,
+									Provider:    providerName,
 								},
 							}, responseChan, provider.logger)
 						} else {
-							providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, schemas.ResponsesStreamRequest, providerName, request.Model, provider.logger)
+							providerUtils.ProcessAndSendError(ctx, postHookRunner, err, responseChan, provider.logger)
 						}
 						return
 					}
@@ -1819,7 +1812,6 @@ func (provider *BedrockProvider) Embedding(ctx *schemas.BifrostContext, key sche
 	if bifrostError != nil {
 		return nil, providerUtils.EnrichError(ctx, bifrostError, jsonData, nil, provider.sendBackRawRequest, provider.sendBackRawResponse)
 	}
-
 	// Parse response based on model type
 	var bifrostResponse *schemas.BifrostEmbeddingResponse
 	switch modelType {
@@ -1838,7 +1830,7 @@ func (provider *BedrockProvider) Embedding(ctx *schemas.BifrostContext, key sche
 		}
 		converted, convErr := cohereResp.ToBifrostEmbeddingResponse()
 		if convErr != nil {
-			return nil, providerUtils.EnrichError(ctx, providerUtils.NewBifrostOperationError("error parsing Cohere embedding response", convErr, providerName), jsonData, rawResponse, provider.sendBackRawRequest, provider.sendBackRawResponse)
+			return nil, providerUtils.EnrichError(ctx, providerUtils.NewBifrostOperationError("error parsing Cohere embedding response", convErr), jsonData, rawResponse, provider.sendBackRawRequest, provider.sendBackRawResponse)
 		}
 		bifrostResponse = converted
 		bifrostResponse.Model = request.Model
@@ -2878,7 +2870,7 @@ func (provider *BedrockProvider) BatchCreate(ctx *schemas.BifrostContext, key sc
 	}
 
 	// Sign request
-	if err := signAWSRequest(ctx, httpReq, key.BedrockKeyConfig.AccessKey, key.BedrockKeyConfig.SecretKey, key.BedrockKeyConfig.SessionToken, key.BedrockKeyConfig.RoleARN, key.BedrockKeyConfig.ExternalID, key.BedrockKeyConfig.RoleSessionName, region, bedrockSigningService, providerName); err != nil {
+	if err := signAWSRequest(ctx, httpReq, key.BedrockKeyConfig.AccessKey, key.BedrockKeyConfig.SecretKey, key.BedrockKeyConfig.SessionToken, key.BedrockKeyConfig.RoleARN, key.BedrockKeyConfig.ExternalID, key.BedrockKeyConfig.RoleSessionName, region, bedrockSigningService); err != nil {
 		return nil, providerUtils.EnrichError(ctx, err, jsonData, nil, sendBackRawRequest, sendBackRawResponse)
 	}
 
@@ -3003,7 +2995,7 @@ func (provider *BedrockProvider) BatchList(ctx *schemas.BifrostContext, keys []s
 	}
 
 	// Sign request
-	if bifrostErr := signAWSRequest(ctx, httpReq, key.BedrockKeyConfig.AccessKey, key.BedrockKeyConfig.SecretKey, key.BedrockKeyConfig.SessionToken, key.BedrockKeyConfig.RoleARN, key.BedrockKeyConfig.ExternalID, key.BedrockKeyConfig.RoleSessionName, region, bedrockSigningService, providerName); bifrostErr != nil {
+	if bifrostErr := signAWSRequest(ctx, httpReq, key.BedrockKeyConfig.AccessKey, key.BedrockKeyConfig.SecretKey, key.BedrockKeyConfig.SessionToken, key.BedrockKeyConfig.RoleARN, key.BedrockKeyConfig.ExternalID, key.BedrockKeyConfig.RoleSessionName, region, bedrockSigningService); bifrostErr != nil {
 		return nil, bifrostErr
 	}
 
@@ -3182,7 +3174,7 @@ func (provider *BedrockProvider) BatchRetrieve(ctx *schemas.BifrostContext, keys
 		}
 
 		// Sign request
-		if err := signAWSRequest(ctx, httpReq, key.BedrockKeyConfig.AccessKey, key.BedrockKeyConfig.SecretKey, key.BedrockKeyConfig.SessionToken, key.BedrockKeyConfig.RoleARN, key.BedrockKeyConfig.ExternalID, key.BedrockKeyConfig.RoleSessionName, region, bedrockSigningService, providerName); err != nil {
+		if err := signAWSRequest(ctx, httpReq, key.BedrockKeyConfig.AccessKey, key.BedrockKeyConfig.SecretKey, key.BedrockKeyConfig.SessionToken, key.BedrockKeyConfig.RoleARN, key.BedrockKeyConfig.ExternalID, key.BedrockKeyConfig.RoleSessionName, region, bedrockSigningService); err != nil {
 			lastErr = err
 			continue
 		}
@@ -3317,7 +3309,7 @@ func (provider *BedrockProvider) BatchCancel(ctx *schemas.BifrostContext, keys [
 		}
 
 		// Sign request
-		if err := signAWSRequest(ctx, httpReq, key.BedrockKeyConfig.AccessKey, key.BedrockKeyConfig.SecretKey, key.BedrockKeyConfig.SessionToken, key.BedrockKeyConfig.RoleARN, key.BedrockKeyConfig.ExternalID, key.BedrockKeyConfig.RoleSessionName, region, bedrockSigningService, providerName); err != nil {
+		if err := signAWSRequest(ctx, httpReq, key.BedrockKeyConfig.AccessKey, key.BedrockKeyConfig.SecretKey, key.BedrockKeyConfig.SessionToken, key.BedrockKeyConfig.RoleARN, key.BedrockKeyConfig.ExternalID, key.BedrockKeyConfig.RoleSessionName, region, bedrockSigningService); err != nil {
 			lastErr = err
 			continue
 		}

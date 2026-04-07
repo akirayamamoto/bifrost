@@ -1764,9 +1764,9 @@ func HandleOpenAIResponsesStreaming(
 						IsBifrostError: false,
 						Error:          &schemas.ErrorField{},
 						ExtraFields: schemas.BifrostErrorExtraFields{
-							RequestType:    schemas.ResponsesStreamRequest,
-							Provider:       providerName,
-							ModelRequested: request.Model,
+							RequestType:       schemas.ResponsesStreamRequest,
+							Provider:          providerName,
+							ResolvedModelUsed: request.Model,
 						},
 					}
 					if response.Response != nil && response.Response.Error != nil {
@@ -1780,7 +1780,7 @@ func HandleOpenAIResponsesStreaming(
 
 				response.ExtraFields.RequestType = schemas.ResponsesStreamRequest
 				response.ExtraFields.Provider = providerName
-				response.ExtraFields.ModelRequested = request.Model
+				response.ExtraFields.ResolvedModelUsed = request.Model
 				response.ExtraFields.ChunkIndex = response.SequenceNumber
 
 				if response.Type == schemas.ResponsesStreamResponseTypeCompleted || response.Type == schemas.ResponsesStreamResponseTypeIncomplete {

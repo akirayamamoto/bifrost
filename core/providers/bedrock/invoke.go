@@ -931,9 +931,6 @@ func ToBedrockInvokeImagesResponse(ctx *schemas.BifrostContext, resp *schemas.Bi
 	}
 
 	model := resp.Model
-	if resp.ExtraFields.ModelRequested != "" {
-		model = resp.ExtraFields.ModelRequested
-	}
 
 	// Stability AI models use the same BedrockImageGenerationResponse format as Titan/Nova Canvas
 	if isStabilityAIModel(model) {
@@ -974,9 +971,6 @@ func ToBedrockEmbeddingInvokeResponse(resp *schemas.BifrostEmbeddingResponse) (i
 	// Use model name to distinguish Cohere from Titan — not batch size.
 	// A single-input Cohere request must still return the Cohere envelope format.
 	model := resp.Model
-	if resp.ExtraFields.ModelRequested != "" {
-		model = resp.ExtraFields.ModelRequested
-	}
 
 	if strings.Contains(strings.ToLower(model), "cohere") {
 		floats := make([][]float32, 0, len(resp.Data))

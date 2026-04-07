@@ -555,7 +555,7 @@ func (plugin *Plugin) PostLLMHook(ctx *schemas.BifrostContext, result *schemas.B
 	isFinalChunk := bifrost.IsFinalChunk(ctx)
 
 	go func() {
-		requestType, _, originalModel, resolvedModel := bifrost.GetResponseFields(result, bifrostErr)
+		requestType, _, _, resolvedModel := bifrost.GetResponseFields(result, bifrostErr)
 
 		var streamResponse *streaming.ProcessedStreamResponse
 		if bifrost.IsStreamRequestType(requestType) {
@@ -661,10 +661,10 @@ func (plugin *Plugin) PostLLMHook(ctx *schemas.BifrostContext, result *schemas.B
 			}
 		}
 		if hasGenerationID && generationID != "" {
-			logger.AddTagToGeneration(generationID, "model", string(model))
+			logger.AddTagToGeneration(generationID, "model", string(resolvedModel))
 		}
 		if hasTraceID && traceID != "" {
-			logger.AddTagToTrace(traceID, "model", string(model))
+			logger.AddTagToTrace(traceID, "model", string(resolvedModel))
 		}
 		// Flush only the effective logger that was used for this request
 		logger.Flush()
