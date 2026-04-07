@@ -1,5 +1,3 @@
-"use client"
-
 import PricingConfigView from "@/app/workspace/config/views/pricingConfigView"
 
 export default function CustomPricingPage() {

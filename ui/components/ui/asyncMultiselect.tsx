@@ -1,5 +1,3 @@
-"use client";
-
 import { CheckIcon, ChevronDown, PlusCircle, PlusIcon, XIcon } from "lucide-react";
 import React, { KeyboardEventHandler, useCallback, useEffect, useRef, useState } from "react";
 import {

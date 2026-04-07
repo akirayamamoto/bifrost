@@ -1,5 +1,3 @@
-"use client"
-
 import { Command as CommandPrimitive } from "cmdk"
 import { CheckIcon, ChevronDownIcon, XIcon } from "lucide-react"
 import * as React from "react"

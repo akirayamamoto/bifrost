@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { getErrorMessage, setProviderFormDirtyState, useAppDispatch } from "@/lib/store";

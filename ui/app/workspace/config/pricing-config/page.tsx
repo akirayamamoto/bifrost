@@ -1,5 +1,3 @@
-"use client"
-
 import PricingConfigView from "../views/pricingConfigView"
 
 export default function PricingConfigPage() {
