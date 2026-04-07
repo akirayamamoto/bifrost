@@ -21,7 +21,6 @@ import (
 	"github.com/maximhq/bifrost/framework/configstore"
 	"github.com/maximhq/bifrost/framework/configstore/tables"
 	"github.com/maximhq/bifrost/framework/logstore"
-	"github.com/maximhq/bifrost/framework/modelcatalog"
 	dynamicPlugins "github.com/maximhq/bifrost/framework/plugins"
 	"github.com/maximhq/bifrost/framework/tracing"
 	"github.com/maximhq/bifrost/plugins/governance"
@@ -782,17 +781,7 @@ func (s *BifrostHTTPServer) ForceReloadPricing(ctx context.Context) error {
 	if s.Config == nil {
 		return fmt.Errorf("server config not initialized")
 	}
-	if s.Config.ModelCatalog == nil {
-		if s.Config.FrameworkConfig == nil || s.Config.FrameworkConfig.Pricing == nil {
-			return fmt.Errorf("framework pricing config not initialized")
-		}
-		// Create a new model catalog
-		modelCatalog, err := modelcatalog.Init(ctx, s.Config.FrameworkConfig.Pricing, s.Config.ConfigStore, nil, logger)
-		if err != nil {
-			return fmt.Errorf("failed to initialize new model catalog: %w", err)
-		}
-		s.Config.ModelCatalog = modelCatalog
-	} else {
+	if s.Config.ModelCatalog != nil {
 		if err := s.Config.ModelCatalog.ForceReloadPricing(ctx); err != nil {
 			return fmt.Errorf("failed to force reload pricing: %w", err)
 		}

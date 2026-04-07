@@ -953,7 +953,12 @@ func (m *MockConfigStore) DeletePricingOverride(ctx context.Context, id string, 
 }
 
 // Model parameters
-func (m *MockConfigStore) GetModelParameters(ctx context.Context, model string) (*tables.TableModelParameters, error) {
+
+func (m *MockConfigStore) GetModelParameters(ctx context.Context) ([]tables.TableModelParameters, error) {
+	return nil, nil
+}
+
+func (m *MockConfigStore) GetModelParametersByModel(ctx context.Context, model string) (*tables.TableModelParameters, error) {
 	return nil, nil
 }
 
@@ -4838,10 +4843,10 @@ func TestKeyHashComparison_AzureConfigSyncScenarios(t *testing.T) {
 	// === Scenario 1: Azure config in DB + same in file -> hash matches, no update ===
 	t.Run("SameAzureConfig_NoUpdate", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -4850,10 +4855,10 @@ func TestKeyHashComparison_AzureConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -4873,10 +4878,10 @@ func TestKeyHashComparison_AzureConfigSyncScenarios(t *testing.T) {
 	// === Scenario 2: Azure config in DB + different endpoint in file -> hash differs ===
 	t.Run("DifferentEndpoint_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -4885,10 +4890,10 @@ func TestKeyHashComparison_AzureConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint:   *schemas.NewEnvVar("https://different-azure.openai.azure.com"), // Changed!
@@ -4908,10 +4913,10 @@ func TestKeyHashComparison_AzureConfigSyncScenarios(t *testing.T) {
 	// === Scenario 3: Azure config in DB + different APIVersion in file -> hash differs ===
 	t.Run("DifferentAPIVersion_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -4920,10 +4925,10 @@ func TestKeyHashComparison_AzureConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -4943,10 +4948,10 @@ func TestKeyHashComparison_AzureConfigSyncScenarios(t *testing.T) {
 	// === Scenario 4: Azure config in DB + different Deployments map in file -> hash differs ===
 	t.Run("DifferentDeployments_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint: *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -4954,10 +4959,10 @@ func TestKeyHashComparison_AzureConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment", "gpt-3.5-turbo": "gpt-35-turbo-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint: *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -5040,10 +5045,10 @@ func TestKeyHashComparison_AzureConfigSyncScenarios(t *testing.T) {
 	// === Scenario 7: APIVersion nil vs set -> hash differs ===
 	t.Run("APIVersionNilVsSet_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint: *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -5052,10 +5057,10 @@ func TestKeyHashComparison_AzureConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -5078,10 +5083,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 	// === Scenario 1: Bedrock config in DB + same in file -> hash matches, no update ===
 	t.Run("SameBedrockConfig_NoUpdate", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5091,10 +5096,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5115,10 +5120,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 	// === Scenario 2: Bedrock config in DB + different AccessKey/SecretKey -> hash differs ===
 	t.Run("DifferentAccessKey_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5128,10 +5133,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAI44QH8DHBEXAMPLE"), // Changed!
@@ -5152,10 +5157,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 	// === Scenario 3: Bedrock config in DB + different SecretKey -> hash differs ===
 	t.Run("DifferentSecretKey_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5165,10 +5170,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5189,10 +5194,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 	// === Scenario 4: Bedrock config in DB + different Region -> hash differs ===
 	t.Run("DifferentRegion_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5202,10 +5207,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5226,10 +5231,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 	// === Scenario 5: Bedrock config in DB + different ARN -> hash differs ===
 	t.Run("DifferentARN_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5240,10 +5245,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5265,10 +5270,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 	// === Scenario 6: Bedrock config in DB + different Deployments -> hash differs ===
 	t.Run("DifferentDeployments_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5278,11 +5283,11 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
-			Aliases: schemas.KeyAliases{"claude-3":   "claude-3-inference-profile", "claude-3.5": "claude-35-inference-profile"},
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
+			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile", "claude-3.5": "claude-35-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
 				SecretKey: *schemas.NewEnvVar("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"),
@@ -5368,10 +5373,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 	// === Scenario 9: SessionToken nil vs set -> hash differs ===
 	t.Run("SessionTokenNilVsSet_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5382,10 +5387,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey:    *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5408,10 +5413,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 	t.Run("IAMRoleAuthVsExplicitCredentials_UpdateTriggered", func(t *testing.T) {
 		// IAM role auth: empty AccessKey and SecretKey
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar(""),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar(""),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar(""), // Empty for IAM role auth
@@ -5422,10 +5427,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 
 		// Explicit credentials
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar(""),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar(""),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "claude-3-inference-profile"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5448,10 +5453,10 @@ func TestKeyHashComparison_BedrockConfigSyncScenarios(t *testing.T) {
 func TestProviderHashComparison_AzureProviderFullLifecycle(t *testing.T) {
 	// === STEP 1: Initial state - Azure provider exists in DB from previous config.json ===
 	initialAzureKey := schemas.Key{
-		ID:     "azure-key-1",
-		Name:   "azure-openai-key",
-		Value:  *schemas.NewEnvVar("azure-api-key-initial"),
-		Weight: 1,
+		ID:      "azure-key-1",
+		Name:    "azure-openai-key",
+		Value:   *schemas.NewEnvVar("azure-api-key-initial"),
+		Weight:  1,
 		Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 		AzureKeyConfig: &schemas.AzureKeyConfig{
 			Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -5483,10 +5488,10 @@ func TestProviderHashComparison_AzureProviderFullLifecycle(t *testing.T) {
 	// The key value is edited via dashboard, but the Azure config structure stays the same
 	// Provider config hash should remain unchanged
 	dashboardEditedKey := schemas.Key{
-		ID:     "azure-key-1",
-		Name:   "azure-openai-key",
-		Value:  *schemas.NewEnvVar("azure-api-key-dashboard-edited"), // Changed via dashboard!
-		Weight: 1,
+		ID:      "azure-key-1",
+		Name:    "azure-openai-key",
+		Value:   *schemas.NewEnvVar("azure-api-key-dashboard-edited"), // Changed via dashboard!
+		Weight:  1,
 		Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 		AzureKeyConfig: &schemas.AzureKeyConfig{
 			Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -5516,10 +5521,10 @@ func TestProviderHashComparison_AzureProviderFullLifecycle(t *testing.T) {
 	sameFileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "azure-key-1",
-				Name:   "azure-openai-key",
-				Value:  *schemas.NewEnvVar("azure-api-key-initial"), // Original value from file
-				Weight: 1,
+				ID:      "azure-key-1",
+				Name:    "azure-openai-key",
+				Value:   *schemas.NewEnvVar("azure-api-key-initial"), // Original value from file
+				Weight:  1,
 				Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 				AzureKeyConfig: &schemas.AzureKeyConfig{
 					Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -5553,11 +5558,11 @@ func TestProviderHashComparison_AzureProviderFullLifecycle(t *testing.T) {
 	newFileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "azure-key-1",
-				Name:   "azure-openai-key",
-				Value:  *schemas.NewEnvVar("azure-api-key-initial"),
-				Weight: 1,
-				Aliases: schemas.KeyAliases{"gpt-4":  "gpt-4-deployment", "gpt-4o": "gpt-4o-deployment"},
+				ID:      "azure-key-1",
+				Name:    "azure-openai-key",
+				Value:   *schemas.NewEnvVar("azure-api-key-initial"),
+				Weight:  1,
+				Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment", "gpt-4o": "gpt-4o-deployment"},
 				AzureKeyConfig: &schemas.AzureKeyConfig{
 					Endpoint:   *schemas.NewEnvVar("https://new-azure.openai.azure.com"), // Changed!
 					APIVersion: schemas.NewEnvVar("2024-10-21"),                          // Changed!
@@ -5663,10 +5668,10 @@ func TestProviderHashComparison_AzureProviderFullLifecycle(t *testing.T) {
 func TestProviderHashComparison_BedrockProviderFullLifecycle(t *testing.T) {
 	// === STEP 1: Initial state - Bedrock provider exists in DB from previous config.json ===
 	initialBedrockKey := schemas.Key{
-		ID:     "bedrock-key-1",
-		Name:   "aws-bedrock-key",
-		Value:  *schemas.NewEnvVar(""), // Empty for Bedrock with IAM or AccessKey auth
-		Weight: 1,
+		ID:      "bedrock-key-1",
+		Name:    "aws-bedrock-key",
+		Value:   *schemas.NewEnvVar(""), // Empty for Bedrock with IAM or AccessKey auth
+		Weight:  1,
 		Aliases: schemas.KeyAliases{"claude-3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0"},
 		BedrockKeyConfig: &schemas.BedrockKeyConfig{
 			AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5698,10 +5703,10 @@ func TestProviderHashComparison_BedrockProviderFullLifecycle(t *testing.T) {
 
 	// === STEP 2: Dashboard adds a second key ===
 	dashboardAddedKey := schemas.Key{
-		ID:     "bedrock-key-2",
-		Name:   "aws-bedrock-key-eu",
-		Value:  *schemas.NewEnvVar(""),
-		Weight: 1,
+		ID:      "bedrock-key-2",
+		Name:    "aws-bedrock-key-eu",
+		Value:   *schemas.NewEnvVar(""),
+		Weight:  1,
 		Aliases: schemas.KeyAliases{"claude-3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0"},
 		BedrockKeyConfig: &schemas.BedrockKeyConfig{
 			AccessKey: *schemas.NewEnvVar("AKIAI44QH8DHBEXAMPLE"),
@@ -5725,10 +5730,10 @@ func TestProviderHashComparison_BedrockProviderFullLifecycle(t *testing.T) {
 	sameFileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "bedrock-key-1",
-				Name:   "aws-bedrock-key",
-				Value:  *schemas.NewEnvVar(""),
-				Weight: 1,
+				ID:      "bedrock-key-1",
+				Name:    "aws-bedrock-key",
+				Value:   *schemas.NewEnvVar(""),
+				Weight:  1,
 				Aliases: schemas.KeyAliases{"claude-3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0"},
 				BedrockKeyConfig: &schemas.BedrockKeyConfig{
 					AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -5764,11 +5769,11 @@ func TestProviderHashComparison_BedrockProviderFullLifecycle(t *testing.T) {
 	newFileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "bedrock-key-1",
-				Name:   "aws-bedrock-key",
-				Value:  *schemas.NewEnvVar(""),
-				Weight: 1,
-				Aliases: schemas.KeyAliases{"claude-3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0", "claude-3-opus":   "anthropic.claude-3-opus-20240229-v1:0"},
+				ID:      "bedrock-key-1",
+				Name:    "aws-bedrock-key",
+				Value:   *schemas.NewEnvVar(""),
+				Weight:  1,
+				Aliases: schemas.KeyAliases{"claude-3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0", "claude-3-opus": "anthropic.claude-3-opus-20240229-v1:0"},
 				BedrockKeyConfig: &schemas.BedrockKeyConfig{
 					AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
 					SecretKey: *schemas.NewEnvVar("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"),
@@ -5892,11 +5897,11 @@ func TestProviderHashComparison_BedrockProviderFullLifecycle(t *testing.T) {
 	sameNewFileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "bedrock-key-1",
-				Name:   "aws-bedrock-key",
-				Value:  *schemas.NewEnvVar(""),
-				Weight: 1,
-				Aliases: schemas.KeyAliases{"claude-3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0", "claude-3-opus":   "anthropic.claude-3-opus-20240229-v1:0"},
+				ID:      "bedrock-key-1",
+				Name:    "aws-bedrock-key",
+				Value:   *schemas.NewEnvVar(""),
+				Weight:  1,
+				Aliases: schemas.KeyAliases{"claude-3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0", "claude-3-opus": "anthropic.claude-3-opus-20240229-v1:0"},
 				BedrockKeyConfig: &schemas.BedrockKeyConfig{
 					AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
 					SecretKey: *schemas.NewEnvVar("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"),
@@ -5935,10 +5940,10 @@ func TestProviderHashComparison_AzureNewProviderFromConfig(t *testing.T) {
 	fileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "azure-key-1",
-				Name:   "azure-openai-key",
-				Value:  *schemas.NewEnvVar("azure-api-key-123"),
-				Weight: 1,
+				ID:      "azure-key-1",
+				Name:    "azure-openai-key",
+				Value:   *schemas.NewEnvVar("azure-api-key-123"),
+				Weight:  1,
 				Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 				AzureKeyConfig: &schemas.AzureKeyConfig{
 					Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -6002,10 +6007,10 @@ func TestProviderHashComparison_BedrockNewProviderFromConfig(t *testing.T) {
 	fileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "bedrock-key-1",
-				Name:   "aws-bedrock-key",
-				Value:  *schemas.NewEnvVar(""),
-				Weight: 1,
+				ID:      "bedrock-key-1",
+				Name:    "aws-bedrock-key",
+				Value:   *schemas.NewEnvVar(""),
+				Weight:  1,
 				Aliases: schemas.KeyAliases{"claude-3": "anthropic.claude-3-sonnet-20240229-v1:0"},
 				BedrockKeyConfig: &schemas.BedrockKeyConfig{
 					AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -6071,10 +6076,10 @@ func TestProviderHashComparison_AzureDBValuePreservedWhenHashMatches(t *testing.
 	dbConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "azure-key-1",
-				Name:   "azure-openai-key",
-				Value:  *schemas.NewEnvVar("DASHBOARD-EDITED-SECRET-KEY"), // Dashboard edited this!
-				Weight: 1,
+				ID:      "azure-key-1",
+				Name:    "azure-openai-key",
+				Value:   *schemas.NewEnvVar("DASHBOARD-EDITED-SECRET-KEY"), // Dashboard edited this!
+				Weight:  1,
 				Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 				AzureKeyConfig: &schemas.AzureKeyConfig{
 					Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -6100,10 +6105,10 @@ func TestProviderHashComparison_AzureDBValuePreservedWhenHashMatches(t *testing.
 	fileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "azure-key-1",
-				Name:   "azure-openai-key",
-				Value:  *schemas.NewEnvVar("original-key-from-file"), // Different value than DB!
-				Weight: 1,
+				ID:      "azure-key-1",
+				Name:    "azure-openai-key",
+				Value:   *schemas.NewEnvVar("original-key-from-file"), // Different value than DB!
+				Weight:  1,
 				Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 				AzureKeyConfig: &schemas.AzureKeyConfig{
 					Endpoint:   *schemas.NewEnvVar("https://myazure.openai.azure.com"), // Same
@@ -6157,10 +6162,10 @@ func TestProviderHashComparison_BedrockDBValuePreservedWhenHashMatches(t *testin
 	dbConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "bedrock-key-1",
-				Name:   "aws-bedrock-key",
-				Value:  *schemas.NewEnvVar(""),
-				Weight: 1,
+				ID:      "bedrock-key-1",
+				Name:    "aws-bedrock-key",
+				Value:   *schemas.NewEnvVar(""),
+				Weight:  1,
 				Aliases: schemas.KeyAliases{"claude-3": "anthropic.claude-3-sonnet-20240229-v1:0"},
 				BedrockKeyConfig: &schemas.BedrockKeyConfig{
 					AccessKey: *schemas.NewEnvVar("DASHBOARD-EDITED-ACCESS-KEY"), // Dashboard edited!
@@ -6187,10 +6192,10 @@ func TestProviderHashComparison_BedrockDBValuePreservedWhenHashMatches(t *testin
 	fileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "bedrock-key-1",
-				Name:   "aws-bedrock-key",
-				Value:  *schemas.NewEnvVar(""),
-				Weight: 1,
+				ID:      "bedrock-key-1",
+				Name:    "aws-bedrock-key",
+				Value:   *schemas.NewEnvVar(""),
+				Weight:  1,
 				Aliases: schemas.KeyAliases{"claude-3": "anthropic.claude-3-sonnet-20240229-v1:0"},
 				BedrockKeyConfig: &schemas.BedrockKeyConfig{
 					AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),                     // Different!
@@ -6276,10 +6281,10 @@ func TestProviderHashComparison_AzureConfigChangedInFile(t *testing.T) {
 	fileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "azure-key-1",
-				Name:   "azure-openai-key",
-				Value:  *schemas.NewEnvVar("azure-api-key-123"),
-				Weight: 1,
+				ID:      "azure-key-1",
+				Name:    "azure-openai-key",
+				Value:   *schemas.NewEnvVar("azure-api-key-123"),
+				Weight:  1,
 				Aliases: schemas.KeyAliases{"gpt-4o": "gpt-4o-deployment"},
 				AzureKeyConfig: &schemas.AzureKeyConfig{
 					Endpoint:   *schemas.NewEnvVar("https://NEW-azure.openai.azure.com"), // Changed!
@@ -6364,10 +6369,10 @@ func TestProviderHashComparison_BedrockConfigChangedInFile(t *testing.T) {
 	fileConfig := configstore.ProviderConfig{
 		Keys: []schemas.Key{
 			{
-				ID:     "bedrock-key-1",
-				Name:   "aws-bedrock-key",
-				Value:  *schemas.NewEnvVar(""),
-				Weight: 1,
+				ID:      "bedrock-key-1",
+				Name:    "aws-bedrock-key",
+				Value:   *schemas.NewEnvVar(""),
+				Weight:  1,
 				Aliases: schemas.KeyAliases{"claude-3-opus": "anthropic.claude-3-opus-20240229-v1:0"},
 				BedrockKeyConfig: &schemas.BedrockKeyConfig{
 					AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -14199,10 +14204,10 @@ func TestKeyHashComparison_VertexConfigSyncScenarios(t *testing.T) {
 	// === Scenario 1: Vertex config in DB + same in file -> hash matches, no update ===
 	t.Run("SameVertexConfig_NoUpdate", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID:       *schemas.NewEnvVar("my-project-123"),
@@ -14213,10 +14218,10 @@ func TestKeyHashComparison_VertexConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID:       *schemas.NewEnvVar("my-project-123"),
@@ -14343,10 +14348,10 @@ func TestKeyHashComparison_VertexConfigSyncScenarios(t *testing.T) {
 	// === Scenario 5: Vertex config in DB + different Deployments map in file -> hash differs ===
 	t.Run("DifferentDeployments_UpdateTriggered", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-api-key-123"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-api-key-123"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID: *schemas.NewEnvVar("my-project-123"),
@@ -14355,11 +14360,11 @@ func TestKeyHashComparison_VertexConfigSyncScenarios(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-api-key-123"),
-			Weight: 1,
-			Aliases: schemas.KeyAliases{"gemini-pro":     "gemini-pro-endpoint", "gemini-1.5-pro": "gemini-15-pro-endpoint"},
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-api-key-123"),
+			Weight:  1,
+			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint", "gemini-1.5-pro": "gemini-15-pro-endpoint"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID: *schemas.NewEnvVar("my-project-123"),
 				Region:    *schemas.NewEnvVar("us-central1"),
@@ -14742,10 +14747,10 @@ func TestProviderHashComparison_VertexConfigChangedInFile(t *testing.T) {
 func TestKeyHashComparison_AzureDeploymentsChange(t *testing.T) {
 	t.Run("AddDeployment", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint: *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -14753,11 +14758,11 @@ func TestKeyHashComparison_AzureDeploymentsChange(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key"),
-			Weight: 1,
-			Aliases: schemas.KeyAliases{"gpt-4":  "gpt-4-deployment", "gpt-4o": "gpt-4o-deployment"},
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key"),
+			Weight:  1,
+			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment", "gpt-4o": "gpt-4o-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint: *schemas.NewEnvVar("https://myazure.openai.azure.com"),
 			},
@@ -14773,21 +14778,21 @@ func TestKeyHashComparison_AzureDeploymentsChange(t *testing.T) {
 
 	t.Run("RemoveDeployment", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key"),
-			Weight: 1,
-			Aliases: schemas.KeyAliases{"gpt-4":  "gpt-4-deployment", "gpt-4o": "gpt-4o-deployment"},
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key"),
+			Weight:  1,
+			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment", "gpt-4o": "gpt-4o-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint: *schemas.NewEnvVar("https://myazure.openai.azure.com"),
 			},
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint: *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -14804,10 +14809,10 @@ func TestKeyHashComparison_AzureDeploymentsChange(t *testing.T) {
 
 	t.Run("ModifyDeploymentValue", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment-v1"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint: *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -14815,10 +14820,10 @@ func TestKeyHashComparison_AzureDeploymentsChange(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment-v2"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint: *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -14845,10 +14850,10 @@ func TestKeyHashComparison_AzureDeploymentsChange(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "azure-key",
-			Value:  *schemas.NewEnvVar("azure-api-key"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "azure-key",
+			Value:   *schemas.NewEnvVar("azure-api-key"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gpt-4": "gpt-4-deployment"},
 			AzureKeyConfig: &schemas.AzureKeyConfig{
 				Endpoint: *schemas.NewEnvVar("https://myazure.openai.azure.com"),
@@ -14868,10 +14873,10 @@ func TestKeyHashComparison_AzureDeploymentsChange(t *testing.T) {
 func TestKeyHashComparison_BedrockDeploymentsChange(t *testing.T) {
 	t.Run("AddDeployment", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-key"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-key"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "arn:aws:bedrock:us-east-1::inference-profile/claude-3"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -14881,11 +14886,11 @@ func TestKeyHashComparison_BedrockDeploymentsChange(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-key"),
-			Weight: 1,
-			Aliases: schemas.KeyAliases{"claude-3":   "arn:aws:bedrock:us-east-1::inference-profile/claude-3", "claude-3.5": "arn:aws:bedrock:us-east-1::inference-profile/claude-3.5"},
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-key"),
+			Weight:  1,
+			Aliases: schemas.KeyAliases{"claude-3": "arn:aws:bedrock:us-east-1::inference-profile/claude-3", "claude-3.5": "arn:aws:bedrock:us-east-1::inference-profile/claude-3.5"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
 				SecretKey: *schemas.NewEnvVar("wJalrXUtnFEMI"),
@@ -14903,11 +14908,11 @@ func TestKeyHashComparison_BedrockDeploymentsChange(t *testing.T) {
 
 	t.Run("RemoveDeployment", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-key"),
-			Weight: 1,
-			Aliases: schemas.KeyAliases{"claude-3":   "arn:aws:bedrock:us-east-1::inference-profile/claude-3", "claude-3.5": "arn:aws:bedrock:us-east-1::inference-profile/claude-3.5"},
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-key"),
+			Weight:  1,
+			Aliases: schemas.KeyAliases{"claude-3": "arn:aws:bedrock:us-east-1::inference-profile/claude-3", "claude-3.5": "arn:aws:bedrock:us-east-1::inference-profile/claude-3.5"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
 				SecretKey: *schemas.NewEnvVar("wJalrXUtnFEMI"),
@@ -14916,10 +14921,10 @@ func TestKeyHashComparison_BedrockDeploymentsChange(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-key"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-key"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "arn:aws:bedrock:us-east-1::inference-profile/claude-3"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -14938,10 +14943,10 @@ func TestKeyHashComparison_BedrockDeploymentsChange(t *testing.T) {
 
 	t.Run("ModifyDeploymentValue", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-key"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-key"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "arn:aws:bedrock:us-east-1::inference-profile/claude-3-old"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -14951,10 +14956,10 @@ func TestKeyHashComparison_BedrockDeploymentsChange(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "bedrock-key",
-			Value:  *schemas.NewEnvVar("bedrock-key"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "bedrock-key",
+			Value:   *schemas.NewEnvVar("bedrock-key"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"claude-3": "arn:aws:bedrock:us-east-1::inference-profile/claude-3-new"},
 			BedrockKeyConfig: &schemas.BedrockKeyConfig{
 				AccessKey: *schemas.NewEnvVar("AKIAIOSFODNN7EXAMPLE"),
@@ -14976,10 +14981,10 @@ func TestKeyHashComparison_BedrockDeploymentsChange(t *testing.T) {
 func TestKeyHashComparison_VertexDeploymentsChange(t *testing.T) {
 	t.Run("AddDeployment", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-creds"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-creds"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID: *schemas.NewEnvVar("my-project"),
@@ -14988,11 +14993,11 @@ func TestKeyHashComparison_VertexDeploymentsChange(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-creds"),
-			Weight: 1,
-			Aliases: schemas.KeyAliases{"gemini-pro":     "gemini-pro-endpoint", "gemini-1.5-pro": "gemini-15-pro-endpoint"},
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-creds"),
+			Weight:  1,
+			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint", "gemini-1.5-pro": "gemini-15-pro-endpoint"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID: *schemas.NewEnvVar("my-project"),
 				Region:    *schemas.NewEnvVar("us-central1"),
@@ -15009,11 +15014,11 @@ func TestKeyHashComparison_VertexDeploymentsChange(t *testing.T) {
 
 	t.Run("RemoveDeployment", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-creds"),
-			Weight: 1,
-			Aliases: schemas.KeyAliases{"gemini-pro":     "gemini-pro-endpoint", "gemini-1.5-pro": "gemini-15-pro-endpoint"},
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-creds"),
+			Weight:  1,
+			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint", "gemini-1.5-pro": "gemini-15-pro-endpoint"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID: *schemas.NewEnvVar("my-project"),
 				Region:    *schemas.NewEnvVar("us-central1"),
@@ -15021,10 +15026,10 @@ func TestKeyHashComparison_VertexDeploymentsChange(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-creds"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-creds"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID: *schemas.NewEnvVar("my-project"),
@@ -15042,10 +15047,10 @@ func TestKeyHashComparison_VertexDeploymentsChange(t *testing.T) {
 
 	t.Run("ModifyDeploymentValue", func(t *testing.T) {
 		dbKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-creds"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-creds"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint-v1"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID: *schemas.NewEnvVar("my-project"),
@@ -15054,10 +15059,10 @@ func TestKeyHashComparison_VertexDeploymentsChange(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-creds"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-creds"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint-v2"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID: *schemas.NewEnvVar("my-project"),
@@ -15086,10 +15091,10 @@ func TestKeyHashComparison_VertexDeploymentsChange(t *testing.T) {
 		}
 
 		fileKey := schemas.Key{
-			ID:     "key-1",
-			Name:   "vertex-key",
-			Value:  *schemas.NewEnvVar("vertex-creds"),
-			Weight: 1,
+			ID:      "key-1",
+			Name:    "vertex-key",
+			Value:   *schemas.NewEnvVar("vertex-creds"),
+			Weight:  1,
 			Aliases: schemas.KeyAliases{"gemini-pro": "gemini-pro-endpoint"},
 			VertexKeyConfig: &schemas.VertexKeyConfig{
 				ProjectID: *schemas.NewEnvVar("my-project"),
@@ -15591,7 +15596,7 @@ func TestConfigSchemaSyncTopLevel(t *testing.T) {
 
 func TestResolveFrameworkPricingConfig(t *testing.T) {
 	defaultURL := modelcatalog.DefaultPricingURL
-	defaultSyncSeconds := int64(modelcatalog.DefaultPricingSyncInterval.Seconds())
+	defaultSyncSeconds := int64(modelcatalog.DefaultSyncInterval.Seconds())
 	fileURL := "https://example.com/pricing.json"
 	fileSyncDuration := 12 * time.Hour
 	fileSyncSeconds := int64(fileSyncDuration.Seconds())
@@ -15648,7 +15653,7 @@ func TestResolveFrameworkPricingConfig(t *testing.T) {
 		require.Equal(t, defaultURL, *normalizedTable.PricingURL)
 		require.Equal(t, defaultSyncSeconds, *normalizedTable.PricingSyncInterval)
 		require.Equal(t, defaultURL, *normalizedModelCatalog.PricingURL)
-		require.Equal(t, modelcatalog.DefaultPricingSyncInterval, *normalizedModelCatalog.PricingSyncInterval)
+		require.Equal(t, modelcatalog.DefaultSyncInterval, *normalizedModelCatalog.PricingSyncInterval)
 	})
 
 	t.Run("invalid db interval falls back and requests db update", func(t *testing.T) {
@@ -15664,7 +15669,7 @@ func TestResolveFrameworkPricingConfig(t *testing.T) {
 		require.Equal(t, dbURL, *normalizedTable.PricingURL)
 		require.Equal(t, defaultSyncSeconds, *normalizedTable.PricingSyncInterval)
 		require.Equal(t, dbURL, *normalizedModelCatalog.PricingURL)
-		require.Equal(t, modelcatalog.DefaultPricingSyncInterval, *normalizedModelCatalog.PricingSyncInterval)
+		require.Equal(t, modelcatalog.DefaultSyncInterval, *normalizedModelCatalog.PricingSyncInterval)
 	})
 }
 

@@ -1372,7 +1372,7 @@ func (s *RDBConfigStore) UpdateMCPClientDiscoveredTools(ctx context.Context, cli
 		Updates(map[string]interface{}{
 			"discovered_tools_json":  string(toolsJSON),
 			"tool_name_mapping_json": string(mappingJSON),
-			"updated_at":            time.Now(),
+			"updated_at":             time.Now(),
 		}).Error
 }
 
@@ -1676,8 +1676,17 @@ func (s *RDBConfigStore) DeletePricingOverride(ctx context.Context, id string, t
 
 // MODEL PARAMETERS METHODS
 
-// GetModelParameters retrieves model parameters for a specific model.
-func (s *RDBConfigStore) GetModelParameters(ctx context.Context, model string) (*tables.TableModelParameters, error) {
+// GetModelParameters returns all stored model parameter rows.
+func (s *RDBConfigStore) GetModelParameters(ctx context.Context) ([]tables.TableModelParameters, error) {
+	var rows []tables.TableModelParameters
+	if err := s.db.WithContext(ctx).Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
+
+// GetModelParametersByModel retrieves model parameters for a specific model.
+func (s *RDBConfigStore) GetModelParametersByModel(ctx context.Context, model string) (*tables.TableModelParameters, error) {
 	var params tables.TableModelParameters
 	if err := s.db.WithContext(ctx).Where("model = ?", model).First(&params).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
